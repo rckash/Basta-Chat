@@ -15,14 +15,14 @@ class MainActivity : AppCompatActivity() {
         //on-click functionalities
         binding.txtAlreadyHaveAnAccount.setOnClickListener { goToLoginActivity() }
         binding.txtLogin.setOnClickListener { goToLoginActivity() }
-        binding.btnJoinNow.setOnClickListener { goToRegisterActivity() }
+        binding.btnJoinNow.setOnClickListener { goToRegistrationActivity() }
     }
     private fun goToLoginActivity() {
         val myIntent = Intent(this, LoginActivity::class.java)
         startActivity(myIntent)
         finish()
     }
-    private fun goToRegisterActivity() {
+    private fun goToRegistrationActivity() {
         val myIntent = Intent(this, RegistrationActivity::class.java)
         startActivity(myIntent)
         finish()

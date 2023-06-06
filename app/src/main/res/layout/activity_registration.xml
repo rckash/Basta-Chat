@@ -72,26 +72,15 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_hello_again" />
 
     <TextView
-        android:id="@+id/txt_mobile_number_registration"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
-        android:fontFamily="@font/work_sans_medium"
-        android:text="Mobile Number"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edt_email_registration" />
-
-    <TextView
         android:id="@+id/txt_password_registration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="30dp"
         android:fontFamily="@font/work_sans_medium"
         android:text="Password"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edt_mobile_number_registration" />
+        app:layout_constraintTop_toBottomOf="@+id/edt_email_registration" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/checkBox_agree_to_terms"
@@ -139,25 +128,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_email_address_registration" />
-
-    <EditText
-        android:id="@+id/edt_mobile_number_registration"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="5dp"
-        android:layout_marginEnd="30dp"
-        android:background="@drawable/edittext_outlined_gray"
-        android:ems="10"
-        android:fontFamily="@font/work_sans_medium"
-        android:hint="Enter your mobile number"
-        android:inputType="text"
-        android:paddingStart="15dp"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txt_mobile_number_registration" />
 
     <EditText
         android:id="@+id/edt_password_registration"
