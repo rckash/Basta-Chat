@@ -15,17 +15,21 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var fAuth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        //viewBinding instantiation
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        //firebase authentication instantiation
+        fAuth = Firebase.auth
         // Check if user is signed in (non-null) and update UI accordingly.
-
-
-        //input
-        val emailLogin = binding.edtEmailLogin.text.toString()
-        val passwordLogin = binding.edtPasswordLogin.text.toString()
+        val currentUser = fAuth.currentUser
+        if (currentUser != null) {
+            val myIntent = Intent(this@LoginActivity, HomeActivity::class.java)
+            startActivity(myIntent)
+            finish()
+        }
 
         //on-click functionalities
-        binding.btnLogin.setOnClickListener { login(emailLogin, passwordLogin) }
+        binding.btnLogin.setOnClickListener { login() }
         binding.txtDontHaveAnAccountLogin.setOnClickListener { goToRegistrationActivity() }
         binding.txtSignUpLogin.setOnClickListener { goToRegistrationActivity() }
     }
@@ -34,8 +38,12 @@ class LoginActivity : AppCompatActivity() {
         startActivity(myIntent)
         finish()
     }
-    private fun login(email: String, password: String) {
-        fAuth.signInWithEmailAndPassword(email, password)
+    private fun login() {
+        //input
+        val emailLogin = binding.edtEmailLogin.text.toString()
+        val passwordLogin = binding.edtPasswordLogin.text.toString()
+        //login process
+        fAuth.signInWithEmailAndPassword(emailLogin, passwordLogin)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // code for logging in user

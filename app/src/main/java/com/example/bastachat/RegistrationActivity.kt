@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.core.content.ContextCompat.startActivity
 import com.example.bastachat.databinding.ActivityRegistrationBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -20,13 +21,20 @@ class RegistrationActivity : AppCompatActivity() {
         binding = ActivityRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
         //firebase instantiation
-        fAuth = FirebaseAuth.getInstance()
+        fAuth = Firebase.auth
+        // Check if user is signed in (non-null) and update UI accordingly.
+        val currentUser = fAuth.currentUser
+        if (currentUser != null) {
+            val myIntent = Intent(this@RegistrationActivity, HomeActivity::class.java)
+            startActivity(myIntent)
+            finish()
+        }
 
         //on-click functionalities
         binding.btnSignUp.setOnClickListener {
-            val email = binding.edtEmailRegistration.text.toString()
-            val password = binding.edtPasswordRegistration.text.toString()
-            signUp(email, password)
+            val emailRegistration = binding.edtEmailRegistration.text.toString()
+            val passwordRegistration = binding.edtPasswordRegistration.text.toString()
+            signUp(emailRegistration, passwordRegistration)
         }
         binding.txtAlreadyHaveAnAccountRegistration.setOnClickListener { goToLoginActivity() }
         binding.txtLoginRegistration.setOnClickListener { goToLoginActivity() }
@@ -36,8 +44,8 @@ class RegistrationActivity : AppCompatActivity() {
         startActivity(myIntent)
         finish()
     }
-    private fun signUp(email: String, password: String) {
-        fAuth.createUserWithEmailAndPassword(email, password)
+    private fun signUp(emailRegistration: String, passwordRegistration: String) {
+        fAuth.createUserWithEmailAndPassword(emailRegistration, passwordRegistration)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     //code for jumping to home
