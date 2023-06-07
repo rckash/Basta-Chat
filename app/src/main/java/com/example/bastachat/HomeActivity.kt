@@ -3,6 +3,7 @@ package com.example.bastachat
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import com.example.bastachat.databinding.ActivityHomeBinding
 import com.example.bastachat.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -19,8 +20,6 @@ class HomeActivity : AppCompatActivity() {
         setContentView(binding.root)
         // Initialize Firebase Auth
         fAuth = Firebase.auth
-        // Check if user is signed in (non-null) and update UI accordingly.
-        exitIfNotLoggedIn()
 
         binding.txtEmailHome.text = fAuth.currentUser?.email.toString()
 
@@ -29,8 +28,20 @@ class HomeActivity : AppCompatActivity() {
             logOut()
             exitIfNotLoggedIn()
         }
+        binding.btnUploadPhoto.setOnClickListener {  }
     }
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+        exitIfNotLoggedIn()
+    }
+    private fun uploadPhoto() {
+        Log.d("HomeActivity","try to show photo selector")
 
+        val intent = Intent(Intent.ACTION_PICK)
+        intent.type = "image/"
+        startActivity(intent)
+    }
     private fun exitIfNotLoggedIn() {
         val currentUser = fAuth.currentUser
         if (currentUser == null) {
@@ -39,8 +50,8 @@ class HomeActivity : AppCompatActivity() {
             finish()
         }
     }
-
     private fun logOut() {
         FirebaseAuth.getInstance().signOut()
+        Log.d("HomeActivity","Logging out")
     }
 }

@@ -20,13 +20,6 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         //firebase authentication instantiation
         fAuth = Firebase.auth
-        // Check if user is signed in (non-null) and update UI accordingly.
-        val currentUser = fAuth.currentUser
-        if (currentUser != null) {
-            val myIntent = Intent(this@LoginActivity, HomeActivity::class.java)
-            startActivity(myIntent)
-            finish()
-        }
 
         //on-click functionalities
         binding.btnLogin.setOnClickListener { login() }
@@ -42,6 +35,14 @@ class LoginActivity : AppCompatActivity() {
         //input
         val emailLogin = binding.edtEmailLogin.text.toString()
         val passwordLogin = binding.edtPasswordLogin.text.toString()
+
+        if (emailLogin.isNullOrEmpty() || passwordLogin.isNullOrEmpty()) {
+            val toastText = "email and/or password is blank"
+            val myToast = Toast.makeText(this@LoginActivity, toastText, 3)
+            myToast.show()
+            Log.d("LoginActivity","email and/or password is null or empty")
+            return
+        }
         //login process
         fAuth.signInWithEmailAndPassword(emailLogin, passwordLogin)
             .addOnCompleteListener(this) { task ->
@@ -50,10 +51,15 @@ class LoginActivity : AppCompatActivity() {
                     val myIntent = Intent(this@LoginActivity, HomeActivity::class.java)
                     startActivity(myIntent)
                     finish()
+                    //console logging
+                    Log.d("LoginActivity", "Email is: $emailLogin")
+                    Log.d("LoginActivity", "Password is: $passwordLogin")
+                    Log.d("LoginActivity", "Successfully logged in user with uid: ${fAuth.currentUser!!.uid}")
                 } else {
                     val toastText = "Incorrect Credential/s"
                     val myToast = Toast.makeText(this@LoginActivity, toastText, 3)
                     myToast.show()
+                    Log.d("LoginActivity","Login failed")
                 }
             }
     }
