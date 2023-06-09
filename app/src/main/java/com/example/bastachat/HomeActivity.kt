@@ -1,44 +1,32 @@
 package com.example.bastachat
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.ActivityResultRegistry
-import androidx.activity.result.contract.ActivityResultContract
+import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat.startActivity
-import androidx.core.graphics.createBitmap
 import com.example.bastachat.databinding.ActivityHomeBinding
-import com.google.android.play.integrity.internal.c
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import java.io.InputStream
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var fAuth: FirebaseAuth
-    private val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-        if(it.resultCode == RESULT_OK) {
-            Log.d("HomeActivity","Activity result: ${it.data}")
-            contentResolver
 
-            val inputStream = contentResolver.openInputStream(intent.data!!)
-            val uri = intent.data
-            Log.d("HomeActivity","URI is: $uri")
-            val myDrawable = Drawable.createFromStream(inputStream, uri.toString())
-            binding.btnUploadPhoto.background = uri
+    private var selectedPhotoUri: Uri? = null
+    private val getImage = registerForActivityResult(
+        ActivityResultContracts.GetContent(),
+        ActivityResultCallback {
+            selectedPhotoUri = it
+            binding.imageView.setImageURI(selectedPhotoUri)
         }
-    }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,8 +47,8 @@ class HomeActivity : AppCompatActivity() {
         binding.btnUploadPhoto.setOnClickListener {
             Log.d("HomeActivity","try to show photo selector")
 
-            // Launch the photo picker and let the user choose only images.
             openImageSelector()
+            uploadImageToFirebaseStorage()
         }
     }
     override fun onStart() {
@@ -80,13 +68,25 @@ class HomeActivity : AppCompatActivity() {
         Log.d("HomeActivity","Logging out")
     }
     private fun openImageSelector() {
-        val myImageSelectorIntent = Intent(Intent.ACTION_PICK)
-        myImageSelectorIntent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-//        intent.type = "image/*"
-        intent.action = Intent.ACTION_GET_CONTENT
-        launcher.launch(myImageSelectorIntent)
-
-
-
+        getImage.launch("image/*")
     }
+    private fun uploadImageToFirebaseStorage() {
+        if (selectedPhotoUri == null) { return }
+
+        val filename = UUID.randomUUID().toString()
+        val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
+
+        ref.putFile(selectedPhotoUri!!)
+            .addOnSuccessListener {
+                Log.d("HomeActivity","Successfully uploaded image: ${it.metadata?.path}")
+
+                ref.downloadUrl.addOnSuccessListener {
+                    it.toString()
+                    Log.d("RegisterActivity", "File Location: $it")
+                }
+            }
+    }
+    private fun saveUserToFirebaseDatabase() {
+    }
+
 }
