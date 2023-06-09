@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.bastachat.databinding.ActivityHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
@@ -24,6 +25,7 @@ class HomeActivity : AppCompatActivity() {
         ActivityResultContracts.GetContent(),
         ActivityResultCallback {
             selectedPhotoUri = it
+            Log.d("HomeActivity", selectedPhotoUri.toString())
             binding.imageView.setImageURI(selectedPhotoUri)
         }
     )
@@ -46,8 +48,10 @@ class HomeActivity : AppCompatActivity() {
         }
         binding.btnUploadPhoto.setOnClickListener {
             Log.d("HomeActivity","try to show photo selector")
-
             openImageSelector()
+        }
+        binding.btnUploadToFirebase.setOnClickListener {
+            Log.d("HomeActivity","try to upload photo to Firebase")
             uploadImageToFirebaseStorage()
         }
     }
@@ -71,7 +75,7 @@ class HomeActivity : AppCompatActivity() {
         getImage.launch("image/*")
     }
     private fun uploadImageToFirebaseStorage() {
-        if (selectedPhotoUri == null) { return }
+        if (selectedPhotoUri != null) { return }
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
@@ -83,10 +87,25 @@ class HomeActivity : AppCompatActivity() {
                 ref.downloadUrl.addOnSuccessListener {
                     it.toString()
                     Log.d("RegisterActivity", "File Location: $it")
+
+                    saveUserToFirebaseDatabase(it.toString())
                 }
             }
     }
-    private fun saveUserToFirebaseDatabase() {
+    private fun saveUserToFirebaseDatabase(profileImageUrl: String) {
+        val uid = FirebaseAuth.getInstance().uid?: ""
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+
+        val user = User(uid, FirebaseAuth.getInstance().currentUser.toString(), profileImageUrl)
+        Log.d("HomeActivity","${FirebaseAuth.getInstance().currentUser.toString()}")
+
+        ref.setValue(user)
+            .addOnSuccessListener {
+                Log.d("RegistrationActivity", "Saved username to Firebase Database")
+            }
+            .addOnFailureListener {
+                Log.d("RegistrationActivity","Save to Firebase Database failed")
+            }
     }
 
 }

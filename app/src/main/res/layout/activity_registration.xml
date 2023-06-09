@@ -72,6 +72,17 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_hello_again" />
 
     <TextView
+        android:id="@+id/txt_username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:fontFamily="@font/work_sans_medium"
+        android:text="Username"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edt_email_registration" />
+
+    <TextView
         android:id="@+id/txt_password_registration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -80,7 +91,7 @@
         android:fontFamily="@font/work_sans_medium"
         android:text="Password"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/edt_email_registration" />
+        app:layout_constraintTop_toBottomOf="@+id/edt_username_registration" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
         android:id="@+id/checkBox_agree_to_terms"
@@ -130,6 +141,24 @@
         app:layout_constraintTop_toBottomOf="@+id/txt_email_address_registration" />
 
     <EditText
+        android:id="@+id/edt_username_registration"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/edittext_outlined_gray"
+        android:ems="10"
+        android:fontFamily="@font/work_sans_medium"
+        android:hint="Enter your username"
+        android:inputType="text|textEmailAddress"
+        android:paddingStart="15dp"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txt_username" />
+
+    <EditText
         android:id="@+id/edt_password_registration"
         android:layout_width="0dp"
         android:layout_height="40dp"
@@ -147,5 +176,14 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txt_password_registration" />
+
+    <ImageView
+        android:id="@+id/img_default"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0"
+        app:srcCompat="@android:mipmap/sym_def_app_icon"
+        tools:layout_editor_absoluteX="234dp"
+        tools:layout_editor_absoluteY="19dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

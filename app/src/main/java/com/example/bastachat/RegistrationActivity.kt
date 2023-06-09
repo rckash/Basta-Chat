@@ -1,20 +1,25 @@
 package com.example.bastachat
 
 import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
+import androidx.core.net.toUri
 import com.example.bastachat.databinding.ActivityRegistrationBinding
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import java.util.UUID
 
 class RegistrationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistrationBinding
     private lateinit var fAuth: FirebaseAuth
+
+    private var selectedPhotoUri: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //viewbinding instantiation
@@ -60,8 +65,28 @@ class RegistrationActivity : AppCompatActivity() {
                     val toastText = "Incorrect Credential/s"
                     val myToast = Toast.makeText(this@RegistrationActivity, toastText, 3)
                     myToast.show()
-                    Log.d("LoginActivity","Login failed")
+                    Log.d("RegistrationActivity","Registration failed: incorrect credential/s")
                 }
             }
+            .addOnFailureListener {
+                Log.d("RegistrationActivity","Registration failed")
+            }
+        saveUserToFirebaseDatabase("none")
+    }
+    private fun saveUserToFirebaseDatabase(profileImageUrl: String) {
+        val uid = FirebaseAuth.getInstance().uid?: ""
+        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+
+        val user = User(uid, binding.edtUsernameRegistration.text.toString(), profileImageUrl)
+
+        ref.setValue(user)
+            .addOnSuccessListener {
+                Log.d("RegistrationActivity", "Saved username to Firebase Database")
+            }
+            .addOnFailureListener {
+            Log.d("RegistrationActivity","Save to Firebase Database failed")
+        }
     }
 }
+
+class User(val uid: String, val username: String, val profileImageUrl: String)
