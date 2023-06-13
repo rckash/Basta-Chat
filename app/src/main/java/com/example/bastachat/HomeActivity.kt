@@ -10,7 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.bastachat.databinding.ActivityHomeBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
@@ -75,7 +78,7 @@ class HomeActivity : AppCompatActivity() {
         getImage.launch("image/*")
     }
     private fun uploadImageToFirebaseStorage() {
-        if (selectedPhotoUri != null) { return }
+        if (selectedPhotoUri == null) { return }
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
@@ -96,8 +99,29 @@ class HomeActivity : AppCompatActivity() {
         val uid = FirebaseAuth.getInstance().uid?: ""
         val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
 
-        val user = User(uid, FirebaseAuth.getInstance().currentUser.toString(), profileImageUrl)
-        Log.d("HomeActivity","${FirebaseAuth.getInstance().currentUser.toString()}")
+        val usernameListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Post object and use the values to update the UI
+                val username = dataSnapshot.getValue()
+                binding.btnUploadPhoto.text = username.toString()
+                // ...
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Getting Post failed, log a message
+                Log.w("TAG", "loadPost:onCancelled", databaseError.toException())
+            }
+        }
+        ref.addValueEventListener(usernameListener)
+        val username = ref.addValueEventListener(usernameListener).toString()
+
+
+
+
+//        FirebaseAuth.getInstance().currentUser.toString()
+
+        val user = User(uid, username, profileImageUrl)
+        Log.d("HomeActivity","username is: $username")
 
         ref.setValue(user)
             .addOnSuccessListener {

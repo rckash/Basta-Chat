@@ -19,7 +19,6 @@ class RegistrationActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegistrationBinding
     private lateinit var fAuth: FirebaseAuth
 
-    private var selectedPhotoUri: Uri? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //viewbinding instantiation
@@ -67,11 +66,11 @@ class RegistrationActivity : AppCompatActivity() {
                     myToast.show()
                     Log.d("RegistrationActivity","Registration failed: incorrect credential/s")
                 }
+                saveUserToFirebaseDatabase("none")
             }
             .addOnFailureListener {
                 Log.d("RegistrationActivity","Registration failed")
             }
-        saveUserToFirebaseDatabase("none")
     }
     private fun saveUserToFirebaseDatabase(profileImageUrl: String) {
         val uid = FirebaseAuth.getInstance().uid?: ""
