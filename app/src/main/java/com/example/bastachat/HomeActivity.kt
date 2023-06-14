@@ -14,6 +14,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
@@ -82,6 +83,7 @@ class HomeActivity : AppCompatActivity() {
 
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("/images/$filename")
+        val uid = FirebaseAuth.getInstance().uid?: ""
 
         ref.putFile(selectedPhotoUri!!)
             .addOnSuccessListener {
@@ -91,45 +93,17 @@ class HomeActivity : AppCompatActivity() {
                     it.toString()
                     Log.d("RegisterActivity", "File Location: $it")
 
-                    saveUserToFirebaseDatabase(it.toString())
-                }
+                    val imageRef = Firebase.database.reference
+                    imageRef.child("users").child(uid).child("profileImageUrl").setValue(it.toString())
+                        .addOnSuccessListener {
+                            Log.d("RegistrationActivity", "Saved image: ${it.toString()} to Firebase Database")
+                        }
+                        .addOnFailureListener {
+                            Log.d("RegistrationActivity","Image save to Firebase Database failed")
+                        } }
             }
     }
-    private fun saveUserToFirebaseDatabase(profileImageUrl: String) {
-        val uid = FirebaseAuth.getInstance().uid?: ""
-        val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
-
-        val usernameListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Post object and use the values to update the UI
-                val username = dataSnapshot.getValue()
-                binding.btnUploadPhoto.text = username.toString()
-                // ...
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Getting Post failed, log a message
-                Log.w("TAG", "loadPost:onCancelled", databaseError.toException())
-            }
-        }
-        ref.addValueEventListener(usernameListener)
-        val username = ref.addValueEventListener(usernameListener).toString()
-
-
-
-
-//        FirebaseAuth.getInstance().currentUser.toString()
-
-        val user = User(uid, username, profileImageUrl)
-        Log.d("HomeActivity","username is: $username")
-
-        ref.setValue(user)
-            .addOnSuccessListener {
-                Log.d("RegistrationActivity", "Saved username to Firebase Database")
-            }
-            .addOnFailureListener {
-                Log.d("RegistrationActivity","Save to Firebase Database failed")
-            }
-    }
-
 }
+
+//next goal is to start making the chat functionality
+
